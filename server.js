@@ -33,7 +33,8 @@ function mainMenu() {
             'Add a department',
             'Add a role',
             'Add an employee',
-            'Update an employee role'
+            'Update an employee role',
+            'EXIT APP'
         ]         
     })
     .then(ans => {
@@ -51,6 +52,9 @@ function mainMenu() {
             addEmployee();
         } else if (ans.action === 'Update an employee role') {
             updateRole();
+        } else if (ans.action === 'EXIT APP') {
+            console.log('Thanks for using EmployeeTracker!')
+            return;
         }
     })
 }
@@ -103,19 +107,127 @@ function viewEmployees() {
 }
 
 function addDepart() {
-    mainMenu();
+    inquirer.prompt({
+        type: 'input',
+        name: 'addDepartment',
+        message: 'Enter the department you want to add: '
+    })
+    .then(ans => {
+        const sql = `
+            INSERT INTO department (name)
+            VALUES ('${ans.addDepartment}')
+        `;
+
+        db.query(sql, function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(`${ans.addDepartment} added to the department list.`);
+            mainMenu();
+        })
+    })
+
 }
 
 function addRole() {
-    mainMenu();
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'roleName',
+            message: 'Enter the role you want to add: '
+        },
+        {
+            type: 'number',
+            name: 'roleSalary',
+            message: 'Enter the salary for this role: $'
+        },
+        {
+            type: 'number',
+            name: 'roleDepartment',
+            message: 'Enter the department ID(INTEGER) for this role: '
+        }
+    ])
+    .then(ans => {
+        const sql = `
+            INSERT INTO role (title, salary, department_id)
+            VALUES ('${ans.roleName}', ${ans.roleSalary}, ${ans.roleDepartment})
+        `;
+
+        db.query(sql, function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(`${ans.roleName} added to the role list.`);
+            mainMenu();
+        })
+    })
 }
 
 function addEmployee() {
-    mainMenu();
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'first_name',
+            message: 'Enter the First name of the new employee: '
+        },
+        {
+            type: 'input',
+            name: 'last_name',
+            message: 'Enter the Last name of the new employee: '
+        },
+        {
+            type: 'number',
+            name: 'role_id',
+            message: 'Enter the role id(INTEGER) of the new employee: '
+        },
+        {
+            type: 'input',
+            name: 'manager',
+            message: 'Enter the name of the manager for this employee(if employee doesnt have a manager leave it blank): '
+        }
+    ])
+    .then(ans => {
+        const sql = `
+            INSERT INTO employee (first_name, last_name, role_id, manager)
+            VALUES ('${ans.first_name}', '${ans.last_name}', ${ans.role_id}, '${ans.manager}')
+        `;
+
+        db.query(sql, function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(`${ans.first_name} ${ans.last_name} added to the employee list.`);
+            mainMenu();
+        })
+    })
 }
 
 function updateRole() {
-    mainMenu();
+    inquirer.prompt([
+        {
+            type: 'number',
+            name: 'employeeId',
+            message: 'Enter the employee id that you want to change the role: '
+        },
+        {
+            type: 'number',
+            name: 'newRole',
+            message: 'Enter the new role id that you want to update: '
+        }
+    ])
+    .then(ans => {
+        const sql = `
+            UPDATE employee SET role_id = ${ans.newRole} WHERE id = ${ans.employeeId}
+        `;
+
+        db.query(sql, function (err, data) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(`The role for employee's id: ${ans.employeeId} has been updated.`);
+            mainMenu();
+        })
+    })
 }
 
 mainMenu();
