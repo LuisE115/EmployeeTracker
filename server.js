@@ -10,7 +10,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: false}));
 app.use(express.json());
-
+// Creates a connection with the database using dotenv to hide credentials
 const db = mysql.createConnection(
     {
         host: 'localhost',
@@ -21,6 +21,7 @@ const db = mysql.createConnection(
     console.log(`Connected to the database.`)
 );
 
+// Function to prompt the main menu options
 function mainMenu() {
     inquirer.prompt({
         type: 'list',
@@ -37,6 +38,7 @@ function mainMenu() {
             'EXIT APP'
         ]         
     })
+    // filter the answer with all the choices and call specific functions for each option
     .then(ans => {
         if (ans.action === 'View all departments') {
             viewDepart();
@@ -58,7 +60,7 @@ function mainMenu() {
         }
     })
 }
-
+// displays department table
 function viewDepart() {
     console.log('Showing department table.');
     const sql = `SELECT * FROM department`;
@@ -71,7 +73,7 @@ function viewDepart() {
         mainMenu();
     })
 }
-
+// displays roles table
 function viewRoles() {
     console.log('Showing roles table');
     const sql = `
@@ -87,7 +89,7 @@ function viewRoles() {
         mainMenu();
     })
 }
-
+// displays employees table
 function viewEmployees() {
     console.log('Showing employees table.');
     const sql = `
@@ -105,7 +107,7 @@ function viewEmployees() {
         mainMenu();
     })
 }
-
+// prompts user to create a new query with user's input to create a new department 
 function addDepart() {
     inquirer.prompt({
         type: 'input',
@@ -128,7 +130,7 @@ function addDepart() {
     })
 
 }
-
+// prompts user to create a new query with user's input to create a new role
 function addRole() {
     inquirer.prompt([
         {
@@ -162,7 +164,7 @@ function addRole() {
         })
     })
 }
-
+// prompts user to create a new query with user's input to create a new employee field
 function addEmployee() {
     inquirer.prompt([
         {
@@ -201,7 +203,7 @@ function addEmployee() {
         })
     })
 }
-
+// prompts user to create a new query with user's input to update the role of an existing employee
 function updateRole() {
     inquirer.prompt([
         {
@@ -229,5 +231,5 @@ function updateRole() {
         })
     })
 }
-
+// function to init the program
 mainMenu();
